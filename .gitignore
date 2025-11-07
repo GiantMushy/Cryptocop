@@ -1,0 +1,21 @@
+# .NET build artifacts
+**/bin/
+**/obj/
+*.user
+*.rsuser
+
+# Node/Vite
+web/node_modules/
+web/dist/
+
+# Publish output
+**/publish/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+
+# Docker local
+docker-data/
