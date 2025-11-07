@@ -1,0 +1,269 @@
+:root {
+  --bg1: #1d0b2e;
+  --bg2: #2a1050;
+  --bg3: #3a0ca3;
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --card-hover: rgba(0, 153, 255, 0.12);
+  --text: #f5f5f7;
+  --muted: #b8b8c2;
+  --primary: #4f46e5; /* purple */
+  --accent: #0ea5e9;  /* blue */
+  --danger: #ef4444;  /* red */
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 800px at 20% 0%, var(--bg3) 0%, transparent 40%),
+              radial-gradient(1000px 700px at 100% 0%, #5b21b6 0%, transparent 35%),
+              linear-gradient(135deg, var(--bg1), var(--bg2));
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.app-container {
+  min-height: 100%;
+  padding: 24px;
+}
+
+.header {
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+}
+
+.auth-center {
+  min-height: calc(100vh - 160px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 760px) {
+  .auth-stack { grid-template-columns: 1fr 1fr; }
+}
+
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.card h2 {
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+label { font-size: 0.9rem; color: var(--muted); }
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  outline: none;
+}
+
+input::placeholder { color: rgba(255,255,255,0.6); }
+
+.btn {
+  appearance: none;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(124,58,237,0.35);
+}
+
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.toolbar { display: flex; align-items: center; gap: 12px; margin: 8px 0 16px 0; }
+
+.crypto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.crypto-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 120px;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.crypto-card:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, var(--card-hover), transparent);
+  box-shadow: 0 12px 40px rgba(14,165,233,0.35), 0 0 0 1px rgba(14,165,233,0.25) inset;
+}
+
+.symbol {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.muted { color: var(--muted); font-size: 0.9rem; }
+
+.status { color: var(--muted); }
+
+/* Top-right Sign Out */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(29,11,46,0.85), rgba(29,11,46,0.35));
+  backdrop-filter: blur(6px);
+}
+
+.signout-btn {
+  appearance: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.signout-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(14,165,233,0.2) inset, 0 6px 22px rgba(14,165,233,0.25);
+}
+
+/* Add top padding when the fixed topbar is visible */
+.app-container.with-topbar {
+  padding-top: 72px;
+}
+
+/* Tabs navigation */
+.nav-tabs { display: flex; gap: 8px; align-items: center; }
+.tab-btn {
+  appearance: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+.tab-btn.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(14,165,233,0.2) inset, 0 6px 22px rgba(14,165,233,0.25);
+}
+
+/* Content layout with sticky cart */
+.content-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.cart-panel {
+  position: sticky;
+  top: 84px; /* slightly below fixed topbar */
+  height: calc(100vh - 100px);
+  overflow: auto;
+}
+
+.cart-items { display: grid; gap: 12px; }
+.cart-card { padding: 14px; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  position: relative;
+  width: min(520px, 92vw);
+  /* Make checkout modal more solid than regular cards */
+  background: rgba(17, 17, 27, 0.94);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 20px 48px rgba(0,0,0,0.45);
+}
+.checkout-form { display: grid; gap: 10px; }
+
+/* Icon button (top-right refresh) */
+.icon-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  cursor: pointer;
+}
+.icon-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(14,165,233,0.2) inset;
+}
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Danger variant for destructive actions */
+.icon-btn.danger { color: var(--danger); }
+.icon-btn.danger:hover {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(239,68,68,0.2) inset;
+}

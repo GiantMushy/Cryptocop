@@ -1,0 +1,69 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  api:
+    build:
+      context: .
+      dockerfile: ./Cryptocop.Software.API/Dockerfile
+    ports:
+      - "5002:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    depends_on:
+      - postgres
+      - payments
+      - emails
+      - rabbitmq
+
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cryptocop
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  payments:
+    build:
+      context: .
+      dockerfile: ./Cryptocop.Software.Worker.Payments/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+
+  emails:
+    build:
+      context: .
+      dockerfile: ./Cryptocop.Software.Worker.Emails/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      # Set SENDGRID_API_KEY in your environment or override here as needed
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+    depends_on:
+      - rabbitmq
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:5002
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="9.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cryptocop.Software.API.Models\Cryptocop.Software.API.Models.csproj" />
+    <ProjectReference Include="..\Cryptocop.Software.API.Repositories\Cryptocop.Software.API.Repositories.csproj" />
+  </ItemGroup>
+
+</Project>
