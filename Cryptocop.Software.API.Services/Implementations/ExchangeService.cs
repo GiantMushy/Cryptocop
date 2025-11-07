@@ -16,7 +16,7 @@ public class ExchangeService : IExchangeService
         _httpClient = httpClient;
     }
 
-    public async Task<Envelope<ExchangeDto>> GetExchangesAsync(int pageNumber = 1)
+    public async Task<Envelope<ExchangeDto>> GetExchanges(int pageNumber = 1)
     {
         var result = new List<ExchangeDto>();
         var limit = 50;

@@ -5,6 +5,6 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface IPaymentService
 {
-    Task AddPaymentCardAsync(string email, PaymentCardInputModel paymentCard);
-    Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCardsAsync(string email);
+    Task AddPaymentCard(string email, PaymentCardInputModel paymentCard);
+    Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCards(string email);
 }

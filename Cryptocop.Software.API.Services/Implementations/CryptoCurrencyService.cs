@@ -16,7 +16,7 @@ public class CryptoCurrencyService : ICryptoCurrencyService
         _httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<CryptoCurrencyDto>> GetAvailableCryptocurrenciesAsync()
+    public async Task<IEnumerable<CryptoCurrencyDto>> GetAvailableCryptocurrencies()
     {
         // v2 assets with price; flatten so price_usd maps to DTO's PriceInUsd
         var url = "/api/v2/assets?limit=50&fields=id,slug,symbol,name,metrics/market_data/price_usd";
@@ -58,7 +58,7 @@ public class CryptoCurrencyService : ICryptoCurrencyService
         return list;
     }
 
-    public async Task<double?> GetPriceUsdAsync(string identifier)
+    public async Task<double?> GetPriceUsd(string identifier)
     {
         if (string.IsNullOrWhiteSpace(identifier)) return null;
         try

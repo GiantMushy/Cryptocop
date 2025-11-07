@@ -20,11 +20,11 @@ public class TokenService : ITokenService
         _tokenRepository = tokenRepository;
     }
 
-    public async Task<string> GenerateJwtTokenAsync(UserDto user)
+    public async Task<string> GenerateJwtToken(UserDto user)
     {
         if (user.TokenId == 0)
         {
-            var tokenMeta = await _tokenRepository.CreateNewTokenAsync();
+            var tokenMeta = await _tokenRepository.CreateNewToken();
             user.TokenId = tokenMeta.Id;
         }
 

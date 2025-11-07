@@ -297,3 +297,4 @@
 /src/Cryptocop.Software.API/obj/Debug/net9.0/Cryptocop.Software.API.pdb
 /src/Cryptocop.Software.API/obj/Debug/net9.0/Cryptocop.Software.API.genruntimeconfig.cache
 /src/Cryptocop.Software.API/obj/Debug/net9.0/ref/Cryptocop.Software.API.dll
+/Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.API/obj/Debug/net9.0/Cryptocop.Software.API.sourcelink.json

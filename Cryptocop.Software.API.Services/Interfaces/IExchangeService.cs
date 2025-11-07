@@ -5,5 +5,5 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface IExchangeService
 {
-    Task<Envelope<ExchangeDto>> GetExchangesAsync(int pageNumber = 1);
+    Task<Envelope<ExchangeDto>> GetExchanges(int pageNumber = 1);
 }

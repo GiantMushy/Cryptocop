@@ -15,7 +15,7 @@ public class UserRepository : IUserRepository
         _db = db;
     }
 
-    public async Task<UserDto> CreateUserAsync(RegisterInputModel inputModel)
+    public async Task<UserDto> CreateUser(RegisterInputModel inputModel)
     {
         var exists = await _db.Users.AnyAsync(u => u.Email == inputModel.Email);
         if (exists)
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
         };
     }
 
-    public async Task<UserDto> AuthenticateUserAsync(LoginInputModel loginInputModel)
+    public async Task<UserDto> AuthenticateUser(LoginInputModel loginInputModel)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == loginInputModel.Email)
                    ?? throw new UnauthorizedAccessException("Invalid credentials.");
@@ -71,7 +71,7 @@ public class UserRepository : IUserRepository
         };
     }
 
-    public async Task<UserDto?> GetByEmailAsync(string email)
+    public async Task<UserDto?> GetByEmail(string email)
     {
         var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
         if (user is null) return null;
@@ -84,7 +84,7 @@ public class UserRepository : IUserRepository
         };
     }
 
-    public async Task UpdateFullNameAsync(string email, string fullName)
+    public async Task UpdateFullName(string email, string fullName)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new InvalidOperationException("User not found");
         user.FullName = fullName.Trim();

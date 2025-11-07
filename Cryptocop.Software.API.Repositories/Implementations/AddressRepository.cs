@@ -15,7 +15,7 @@ public class AddressRepository : IAddressRepository
         _db = db;
     }
 
-    public async Task AddAddressAsync(string email, AddressInputModel address)
+    public async Task AddAddress(string email, AddressInputModel address)
     {
         var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email)
                    ?? throw new InvalidOperationException("User not found");
@@ -32,7 +32,7 @@ public class AddressRepository : IAddressRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<AddressDto>> GetAllAddressesAsync(string email)
+    public async Task<IEnumerable<AddressDto>> GetAllAddresses(string email)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return Enumerable.Empty<AddressDto>();
@@ -51,7 +51,7 @@ public class AddressRepository : IAddressRepository
             .ToListAsync();
     }
 
-    public async Task DeleteAddressAsync(string email, int addressId)
+    public async Task DeleteAddress(string email, int addressId)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return;
@@ -64,7 +64,7 @@ public class AddressRepository : IAddressRepository
         }
     }
 
-    public async Task<AddressDto?> GetAddressByIdAsync(string email, int addressId)
+    public async Task<AddressDto?> GetAddressById(string email, int addressId)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return null;

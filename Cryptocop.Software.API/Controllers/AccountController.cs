@@ -26,7 +26,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterInputModel input)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        var user = await _accountService.CreateUserAsync(input);
+    var user = await _accountService.CreateUser(input);
         return Created($"/api/account/{user.Id}", new { user.Id, user.FullName, user.Email });
     }
 
@@ -38,8 +38,8 @@ public class AccountController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         try
         {
-            var user = await _accountService.AuthenticateUserAsync(input);
-            var token = await _tokenService.GenerateJwtTokenAsync(user);
+            var user = await _accountService.AuthenticateUser(input);
+            var token = await _tokenService.GenerateJwtToken(user);
             return Ok(new JwtTokenDto { Token = token });
         }
         catch (UnauthorizedAccessException)
@@ -48,10 +48,11 @@ public class AccountController : ControllerBase
         }
     }
 
-    // GET /api/account/signout
+    // POST /api/account/signout (and GET for compatibility)
+    [HttpPost("signout")]
     [HttpGet("signout")]
     [Authorize]
-    public new IActionResult SignOut()
+    public IActionResult SignOut()
     {
         var tokenIdValue = User.FindFirst("tokenId")?.Value;
         if (string.IsNullOrWhiteSpace(tokenIdValue) || !int.TryParse(tokenIdValue, out var tokenId))
@@ -59,10 +60,12 @@ public class AccountController : ControllerBase
             return Unauthorized();
         }
 
-        _accountService.LogoutAsync(tokenId).Wait();
+    _accountService.Logout(tokenId).Wait();
         return NoContent();
     }
 
+
+    // Additional functionality for the Web Client (Profile Management)
     private string? GetEmail()
     {
         return User.FindFirst("email")?.Value
@@ -77,7 +80,7 @@ public class AccountController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var user = await _accountService.GetUserByEmailAsync(email);
+    var user = await _accountService.GetUserByEmail(email);
         if (user == null) return NotFound();
         return Ok(new { email = user.Email, fullName = user.FullName });
     }
@@ -88,7 +91,7 @@ public class AccountController : ControllerBase
         public string FullName { get; set; } = string.Empty;
     }
 
-    // PATCH /api/account/profile
+    // PATCH /api/account/profile - update full name only
     [HttpPatch("profile")]
     [Authorize]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileInputModel input)
@@ -96,7 +99,7 @@ public class AccountController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _accountService.UpdateFullNameAsync(email, input.FullName);
+    await _accountService.UpdateFullName(email, input.FullName);
         return NoContent();
     }
 }

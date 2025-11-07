@@ -5,8 +5,8 @@ namespace Cryptocop.Software.API.Repositories.Interfaces;
 
 public interface IAddressRepository
 {
-    Task AddAddressAsync(string email, AddressInputModel address);
-    Task<IEnumerable<AddressDto>> GetAllAddressesAsync(string email);
-    Task DeleteAddressAsync(string email, int addressId);
-    Task<AddressDto?> GetAddressByIdAsync(string email, int addressId);
+    Task AddAddress(string email, AddressInputModel address);
+    Task<IEnumerable<AddressDto>> GetAllAddresses(string email);
+    Task DeleteAddress(string email, int addressId);
+    Task<AddressDto?> GetAddressById(string email, int addressId);
 }

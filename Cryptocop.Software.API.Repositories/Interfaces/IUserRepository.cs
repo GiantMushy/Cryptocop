@@ -5,8 +5,8 @@ namespace Cryptocop.Software.API.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<UserDto> CreateUserAsync(RegisterInputModel inputModel);
-    Task<UserDto> AuthenticateUserAsync(LoginInputModel loginInputModel);
-    Task<UserDto?> GetByEmailAsync(string email);
-    Task UpdateFullNameAsync(string email, string fullName);
+    Task<UserDto> CreateUser(RegisterInputModel inputModel);
+    Task<UserDto> AuthenticateUser(LoginInputModel loginInputModel);
+    Task<UserDto?> GetByEmail(string email);
+    Task UpdateFullName(string email, string fullName);
 }

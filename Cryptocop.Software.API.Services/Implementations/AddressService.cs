@@ -14,12 +14,12 @@ public class AddressService : IAddressService
         _addressRepository = addressRepository;
     }
 
-    public Task AddAddressAsync(string email, AddressInputModel address)
-        => _addressRepository.AddAddressAsync(email, address);
+    public Task AddAddress(string email, AddressInputModel address)
+        => _addressRepository.AddAddress(email, address);
 
-    public Task<IEnumerable<AddressDto>> GetAllAddressesAsync(string email)
-        => _addressRepository.GetAllAddressesAsync(email);
+    public Task<IEnumerable<AddressDto>> GetAllAddresses(string email)
+        => _addressRepository.GetAllAddresses(email);
 
-    public Task DeleteAddressAsync(string email, int addressId)
-        => _addressRepository.DeleteAddressAsync(email, addressId);
+    public Task DeleteAddress(string email, int addressId)
+        => _addressRepository.DeleteAddress(email, addressId);
 }

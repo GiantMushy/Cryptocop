@@ -2,5 +2,5 @@
 
 public interface IQueueService
 {
-    Task PublishMessageAsync(string routingKey, object body);
+    Task PublishMessage(string routingKey, object body);
 }

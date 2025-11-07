@@ -50,3 +50,4 @@
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Emails/bin/Debug/net9.0/RabbitMQ.Client.dll
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Emails/bin/Debug/net9.0/SendGrid.dll
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Emails/bin/Debug/net9.0/StarkbankEcdsa.dll
+/Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Emails/obj/Debug/net9.0/Cryptocop.Software.Worker.Emails.sourcelink.json

@@ -5,6 +5,6 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface IOrderService
 {
-    Task<IEnumerable<OrderDto>> GetOrdersAsync(string email);
-    Task<OrderDto> CreateNewOrderAsync(string email, OrderInputModel order);
+    Task<IEnumerable<OrderDto>> GetOrders(string email);
+    Task<OrderDto> CreateNewOrder(string email, OrderInputModel order);
 }

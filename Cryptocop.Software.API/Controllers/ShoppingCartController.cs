@@ -32,7 +32,7 @@ public class ShoppingCartController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var items = await _cartService.GetCartItemsAsync(email);
+    var items = await _cartService.GetCartItems(email);
         return Ok(items);
     }
 
@@ -45,7 +45,7 @@ public class ShoppingCartController : ControllerBase
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
 
-        await _cartService.AddCartItemAsync(email, input);
+    await _cartService.AddCartItem(email, input);
         return Created("/api/cart", null);
     }
 
@@ -56,7 +56,7 @@ public class ShoppingCartController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _cartService.RemoveCartItemAsync(email, id);
+    await _cartService.RemoveCartItem(email, id);
         return NoContent();
     }
 
@@ -68,7 +68,7 @@ public class ShoppingCartController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _cartService.UpdateCartItemQuantityAsync(email, id, input.Quantity!.Value);
+    await _cartService.UpdateCartItemQuantity(email, id, input.Quantity!.Value);
         return NoContent();
     }
 
@@ -79,7 +79,7 @@ public class ShoppingCartController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _cartService.ClearCartAsync(email);
+    await _cartService.ClearCart(email);
         return NoContent();
     }
 }

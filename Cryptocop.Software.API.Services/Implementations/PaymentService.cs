@@ -14,9 +14,9 @@ public class PaymentService : IPaymentService
         _repo = repo;
     }
 
-    public Task AddPaymentCardAsync(string email, PaymentCardInputModel paymentCard)
-        => _repo.AddPaymentCardAsync(email, paymentCard);
+    public Task AddPaymentCard(string email, PaymentCardInputModel paymentCard)
+        => _repo.AddPaymentCard(email, paymentCard);
 
-    public Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCardsAsync(string email)
-        => _repo.GetStoredPaymentCardsAsync(email);
+    public Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCards(string email)
+        => _repo.GetStoredPaymentCards(email);
 }

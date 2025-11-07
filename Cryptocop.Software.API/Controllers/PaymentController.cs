@@ -32,7 +32,7 @@ public class PaymentController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var cards = await _paymentService.GetStoredPaymentCardsAsync(email);
+    var cards = await _paymentService.GetStoredPaymentCards(email);
         return Ok(cards);
     }
 
@@ -44,7 +44,7 @@ public class PaymentController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _paymentService.AddPaymentCardAsync(email, input);
+    await _paymentService.AddPaymentCard(email, input);
         return Created("/api/payments", null);
     }
 }

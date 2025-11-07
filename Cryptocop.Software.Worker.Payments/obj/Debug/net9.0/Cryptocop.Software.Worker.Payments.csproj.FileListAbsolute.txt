@@ -50,3 +50,4 @@
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Payments/bin/Debug/net9.0/RabbitMQ.Client.dll
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Payments/bin/Debug/net9.0/Cryptocop.Software.API.Models.dll
 /Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Payments/bin/Debug/net9.0/Cryptocop.Software.API.Models.pdb
+/Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.Worker.Payments/obj/Debug/net9.0/Cryptocop.Software.Worker.Payments.sourcelink.json

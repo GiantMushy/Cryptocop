@@ -12,6 +12,6 @@ public class JwtTokenService : IJwtTokenService
         _tokenRepository = tokenRepository;
     }
 
-    public Task<bool> IsTokenBlacklistedAsync(int tokenId)
-        => _tokenRepository.IsTokenBlacklistedAsync(tokenId);
+    public Task<bool> IsTokenBlacklisted(int tokenId)
+        => _tokenRepository.IsTokenBlacklisted(tokenId);
 }

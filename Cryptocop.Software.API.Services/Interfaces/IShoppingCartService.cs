@@ -5,9 +5,9 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface IShoppingCartService
 {
-    Task<IEnumerable<ShoppingCartItemDto>> GetCartItemsAsync(string email);
-    Task AddCartItemAsync(string email, ShoppingCartItemInputModel shoppingCartItemItem);
-    Task RemoveCartItemAsync(string email, int id);
-    Task UpdateCartItemQuantityAsync(string email, int id, float quantity);
-    Task ClearCartAsync(string email);
+    Task<IEnumerable<ShoppingCartItemDto>> GetCartItems(string email);
+    Task AddCartItem(string email, ShoppingCartItemInputModel shoppingCartItemItem);
+    Task RemoveCartItem(string email, int id);
+    Task UpdateCartItemQuantity(string email, int id, float quantity);
+    Task ClearCart(string email);
 }

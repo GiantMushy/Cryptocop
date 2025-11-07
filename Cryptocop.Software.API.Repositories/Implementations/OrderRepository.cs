@@ -28,7 +28,7 @@ public class OrderRepository : IOrderRepository
         _db = db;
     }
 
-    public async Task<IEnumerable<OrderDto>> GetOrdersAsync(string email)
+    public async Task<IEnumerable<OrderDto>> GetOrders(string email)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return Enumerable.Empty<OrderDto>();
@@ -65,18 +65,18 @@ public class OrderRepository : IOrderRepository
         });
     }
 
-    public async Task<OrderDto> CreateNewOrderAsync(string email, OrderInputModel order)
+    public async Task<OrderDto> CreateNewOrder(string email, OrderInputModel order)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email)
                    ?? throw new InvalidOperationException("User not found");
 
-        var address = await _addressRepository.GetAddressByIdAsync(email, order.AddressId)
+    var address = await _addressRepository.GetAddressById(email, order.AddressId)
                       ?? throw new InvalidOperationException("Address not found");
 
-        var card = await _paymentRepository.GetPaymentCardByIdAsync(email, order.PaymentCardId)
+    var card = await _paymentRepository.GetPaymentCardById(email, order.PaymentCardId)
                    ?? throw new InvalidOperationException("Payment card not found");
 
-        var cartItems = (await _shoppingCartRepository.GetCartItemsAsync(email)).ToList();
+    var cartItems = (await _shoppingCartRepository.GetCartItems(email)).ToList();
         if (cartItems.Count == 0)
         {
             throw new InvalidOperationException("Shopping cart is empty");
@@ -110,7 +110,7 @@ public class OrderRepository : IOrderRepository
         await _db.SaveChangesAsync();
 
         // Clear the cart once order saved
-        await _shoppingCartRepository.ClearCartAsync(email);
+    await _shoppingCartRepository.ClearCart(email);
 
         // Return unmasked card for creation response
         return new OrderDto

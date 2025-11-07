@@ -14,7 +14,7 @@ public class TokenRepository : ITokenRepository
         _db = db;
     }
 
-    public Task<JwtTokenDto> CreateNewTokenAsync()
+    public Task<JwtTokenDto> CreateNewToken()
     {
         var entity = new Entities.Token { IsBlacklisted = false };
         _db.Tokens.Add(entity);
@@ -22,13 +22,13 @@ public class TokenRepository : ITokenRepository
         return Task.FromResult(new JwtTokenDto { Id = entity.Id });
     }
 
-    public Task<bool> IsTokenBlacklistedAsync(int tokenId)
+    public Task<bool> IsTokenBlacklisted(int tokenId)
     {
         var isBlacklisted = _db.Tokens.AsNoTracking().Any(t => t.Id == tokenId && t.IsBlacklisted);
         return Task.FromResult(isBlacklisted);
     }
 
-    public Task VoidTokenAsync(int tokenId)
+    public Task VoidToken(int tokenId)
     {
         var token = _db.Tokens.FirstOrDefault(t => t.Id == tokenId);
         if (token != null && !token.IsBlacklisted)

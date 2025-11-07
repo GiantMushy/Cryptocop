@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Cryptocop.Software.Worker.Payments")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4992ec9c3f9bd5eb44fe165d0d700a2ba515ec0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Cryptocop.Software.Worker.Payments")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Cryptocop.Software.Worker.Payments")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -32,3 +32,4 @@
 /src/Cryptocop.Software.API.Services/obj/Debug/net9.0/refint/Cryptocop.Software.API.Services.dll
 /src/Cryptocop.Software.API.Services/obj/Debug/net9.0/Cryptocop.Software.API.Services.pdb
 /src/Cryptocop.Software.API.Services/obj/Debug/net9.0/ref/Cryptocop.Software.API.Services.dll
+/Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.API.Services/obj/Debug/net9.0/Cryptocop.Software.API.Services.sourcelink.json

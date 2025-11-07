@@ -14,7 +14,7 @@ public class ShoppingCartRepository : IShoppingCartRepository
         _db = db;
     }
 
-    public async Task<IEnumerable<ShoppingCartItemDto>> GetCartItemsAsync(string email)
+    public async Task<IEnumerable<ShoppingCartItemDto>> GetCartItems(string email)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return Enumerable.Empty<ShoppingCartItemDto>();
@@ -33,33 +33,43 @@ public class ShoppingCartRepository : IShoppingCartRepository
             .ToListAsync();
     }
 
-    public async Task AddCartItemAsync(string email, ShoppingCartItemInputModel shoppingCartItemItem, float priceInUsd)
+    public async Task AddCartItem(string email, ShoppingCartItemInputModel shoppingCartItemItem, float priceInUsd)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) throw new InvalidOperationException("User not found");
-        // Do not add duplicate items; if it exists, no-op
         var identifier = shoppingCartItemItem.ProductIdentifier;
+        var requestedQty = shoppingCartItemItem.Quantity ?? 1f;
+        if (requestedQty <= 0f) requestedQty = 1f;
+
         var existing = await _db.ShoppingCartItems
             .FirstOrDefaultAsync(ci => ci.UserId == userId && ci.ProductIdentifier == identifier);
+
+        var unit = (decimal)priceInUsd;
+
         if (existing != null)
         {
-            // No changes when already present
-            return;
+            // Accumulate quantity if item already exists
+            existing.Quantity = existing.Quantity + requestedQty;
+            // Keep original unit price if present; otherwise use latest non-zero price if available
+            if (existing.UnitPrice <= 0 && unit > 0) existing.UnitPrice = unit;
+            existing.TotalPrice = existing.UnitPrice * (decimal)existing.Quantity;
         }
-        var qty = 1f; // Always add a single unit
-        var unit = (decimal)priceInUsd;
-        _db.ShoppingCartItems.Add(new Entities.ShoppingCartItem
+        else
         {
-            UserId = userId,
-            ProductIdentifier = identifier,
-            Quantity = qty,
-            UnitPrice = unit,
-            TotalPrice = unit * (decimal)qty
-        });
+            var toAddQty = requestedQty;
+            _db.ShoppingCartItems.Add(new Entities.ShoppingCartItem
+            {
+                UserId = userId,
+                ProductIdentifier = identifier,
+                Quantity = toAddQty,
+                UnitPrice = unit,
+                TotalPrice = unit * (decimal)toAddQty
+            });
+        }
         await _db.SaveChangesAsync();
     }
 
-    public async Task RemoveCartItemAsync(string email, int id)
+    public async Task RemoveCartItem(string email, int id)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return;
@@ -71,7 +81,7 @@ public class ShoppingCartRepository : IShoppingCartRepository
         }
     }
 
-    public async Task UpdateCartItemQuantityAsync(string email, int id, float quantity)
+    public async Task UpdateCartItemQuantity(string email, int id, float quantity)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return;
@@ -92,7 +102,7 @@ public class ShoppingCartRepository : IShoppingCartRepository
         }
     }
 
-    public async Task ClearCartAsync(string email)
+    public async Task ClearCart(string email)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return;
@@ -101,8 +111,8 @@ public class ShoppingCartRepository : IShoppingCartRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task DeleteCartAsync(string email)
+    public async Task DeleteCart(string email)
     {
-        await ClearCartAsync(email);
+        await ClearCart(email);
     }
 }

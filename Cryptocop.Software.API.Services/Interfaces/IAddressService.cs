@@ -5,7 +5,7 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface IAddressService
 {
-    Task AddAddressAsync(string email, AddressInputModel address);
-    Task<IEnumerable<AddressDto>> GetAllAddressesAsync(string email);
-    Task DeleteAddressAsync(string email, int addressId);
+    Task AddAddress(string email, AddressInputModel address);
+    Task<IEnumerable<AddressDto>> GetAllAddresses(string email);
+    Task DeleteAddress(string email, int addressId);
 }

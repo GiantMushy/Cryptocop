@@ -32,7 +32,7 @@ public class OrderController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var orders = await _orderService.GetOrdersAsync(email);
+    var orders = await _orderService.GetOrders(email);
         return Ok(orders);
     }
 
@@ -44,7 +44,7 @@ public class OrderController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var created = await _orderService.CreateNewOrderAsync(email, input);
+    var created = await _orderService.CreateNewOrder(email, input);
         return Created($"/api/orders/{created.Id}", created);
     }
 }

@@ -35,7 +35,7 @@ public class QueueService : IQueueService, IDisposable
     _channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null);
     }
 
-    public Task PublishMessageAsync(string routingKey, object body)
+    public Task PublishMessage(string routingKey, object body)
     {
         var json = JsonConvert.SerializeObject(body);
         var bytes = Encoding.UTF8.GetBytes(json);

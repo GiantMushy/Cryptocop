@@ -2,5 +2,5 @@
 
 public interface IJwtTokenService
 {
-    Task<bool> IsTokenBlacklistedAsync(int tokenId);
+    Task<bool> IsTokenBlacklisted(int tokenId);
 }

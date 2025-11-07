@@ -2,11 +2,13 @@
 using Cryptocop.Software.API.Models;
 using Cryptocop.Software.API.Models.Dtos;
 using Cryptocop.Software.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cryptocop.Software.API.Controllers;
 
 [Route("api/exchanges")]
 [ApiController]
+[AllowAnonymous]
 public class ExchangeController : ControllerBase
 {
     private readonly IExchangeService _exchangeService;
@@ -21,7 +23,7 @@ public class ExchangeController : ControllerBase
     public async Task<ActionResult<Envelope<ExchangeDto>>> Get([FromQuery] int pageNumber = 1)
     {
         if (pageNumber < 1) pageNumber = 1;
-        var envelope = await _exchangeService.GetExchangesAsync(pageNumber);
+    var envelope = await _exchangeService.GetExchanges(pageNumber);
         return Ok(envelope);
     }
 }

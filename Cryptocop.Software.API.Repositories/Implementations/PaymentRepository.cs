@@ -15,7 +15,7 @@ public class PaymentRepository : IPaymentRepository
         _db = db;
     }
 
-    public async Task AddPaymentCardAsync(string email, PaymentCardInputModel paymentCard)
+    public async Task AddPaymentCard(string email, PaymentCardInputModel paymentCard)
     {
         var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email)
                    ?? throw new InvalidOperationException("User not found");
@@ -49,7 +49,7 @@ public class PaymentRepository : IPaymentRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCardsAsync(string email)
+    public async Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCards(string email)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return Enumerable.Empty<PaymentCardDto>();
@@ -67,7 +67,7 @@ public class PaymentRepository : IPaymentRepository
             .ToListAsync();
     }
 
-    public async Task<PaymentCardDto?> GetPaymentCardByIdAsync(string email, int id)
+    public async Task<PaymentCardDto?> GetPaymentCardById(string email, int id)
     {
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) return null;

@@ -19,10 +19,10 @@ public class ShoppingCartService : IShoppingCartService
         _repo = repo;
     }
 
-    public Task<IEnumerable<ShoppingCartItemDto>> GetCartItemsAsync(string email)
-        => _repo.GetCartItemsAsync(email);
+    public Task<IEnumerable<ShoppingCartItemDto>> GetCartItems(string email)
+        => _repo.GetCartItems(email);
 
-    public async Task AddCartItemAsync(string email, ShoppingCartItemInputModel shoppingCartItemItem)
+    public async Task AddCartItem(string email, ShoppingCartItemInputModel shoppingCartItemItem)
     {
         // Fetch current USD price for the product identifier from Messari
         var identifier = shoppingCartItemItem.ProductIdentifier.Trim();
@@ -68,17 +68,17 @@ public class ShoppingCartService : IShoppingCartService
             // keep default 0 if anything fails, this makes error detection easier upstream
         }
 
-        await _repo.AddCartItemAsync(email, shoppingCartItemItem, (float)priceUsd);
+    await _repo.AddCartItem(email, shoppingCartItemItem, (float)priceUsd);
     }
 
-    public Task RemoveCartItemAsync(string email, int id)
-        => _repo.RemoveCartItemAsync(email, id);
+    public Task RemoveCartItem(string email, int id)
+        => _repo.RemoveCartItem(email, id);
 
-    public Task UpdateCartItemQuantityAsync(string email, int id, float quantity)
-        => _repo.UpdateCartItemQuantityAsync(email, id, quantity);
+    public Task UpdateCartItemQuantity(string email, int id, float quantity)
+        => _repo.UpdateCartItemQuantity(email, id, quantity);
 
-    public Task ClearCartAsync(string email)
-        => _repo.ClearCartAsync(email);
+    public Task ClearCart(string email)
+        => _repo.ClearCart(email);
 
     private class PriceResponse
     {

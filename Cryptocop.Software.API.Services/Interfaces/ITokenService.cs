@@ -4,5 +4,5 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface ITokenService
 {
-    Task<string> GenerateJwtTokenAsync(UserDto user);
+    Task<string> GenerateJwtToken(UserDto user);
 }

@@ -154,6 +154,7 @@ export default function App() {
   const [orders, setOrders] = useState([])
   const [ordersStatus, setOrdersStatus] = useState('')
   const [paymentStatus, setPaymentStatus] = useState('')
+  const [qtyByPid, setQtyByPid] = useState({}) // per-asset quantity entry (supports fractional)
 
   // Helper to read RFC7807 ProblemDetails errors if present
   const readProblem = async (res) => {
@@ -441,16 +442,23 @@ export default function App() {
     setShowOrders(true)
   }
 
-  const addToCart = async (productIdentifier) => {
+  const addToCart = async (productIdentifier, quantity) => {
     if (!productIdentifier) return
-    // Do not duplicate in list; only add if it doesn't exist, always as single unit
+    let q = Number(quantity)
+    if (!Number.isFinite(q) || q <= 0) q = 1
+    // If item exists, accumulate by patching the new total
     const existing = cartItems.find(i => (i.productIdentifier ?? i.ProductIdentifier) === productIdentifier)
-    if (existing) return
+    if (existing) {
+      const currentQty = Number(existing.quantity ?? existing.Quantity ?? 0)
+      const newQty = currentQty + q
+      await patchQuantity(existing.id ?? existing.Id, newQty)
+      return
+    }
     try {
       const res = await fetch(`${apiBase}/api/cart`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productIdentifier, quantity: 1 })
+        body: JSON.stringify({ productIdentifier, quantity: q })
       })
       if (res.status === 401) { setToken(''); return }
     } catch {}
@@ -584,9 +592,19 @@ export default function App() {
                             <span className="muted">price unavailable</span>
                           )}
                         </div>
-                        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                        <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <input
+                            type="number"
+                            min={0.01}
+                            step={0.01}
+                            placeholder="Qty"
+                            title="Quantity (supports decimals)"
+                            value={qtyByPid[pid] ?? ''}
+                            onChange={e => setQtyByPid(q => ({ ...q, [pid]: e.target.value }))}
+                            style={{ width: 90 }}
+                          />
                           <button className="icon-btn" aria-label="Add to cart" title="POST /api/cart"
-                                  onClick={() => addToCart(pid)} disabled={!token || !pid} style={{ position: 'static' }}>
+                                  onClick={() => addToCart(pid, qtyByPid[pid] ?? 1)} disabled={!token || !pid} style={{ position: 'static' }}>
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                           </button>
                           <button className="icon-btn danger" aria-label="Remove from cart" title="DELETE /api/cart/{id}"
@@ -761,13 +779,13 @@ export default function App() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginTop: 8 }}>
                         <div className="muted">Qty</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <button className="icon-btn" aria-label="Decrease" title={`PATCH /api/cart/${id}`}
-                                  onClick={() => patchQuantity(id, (qty ?? 0) - 1)} style={{ position: 'static' }}>
+        <button className="icon-btn" aria-label="Decrease" title={`PATCH /api/cart/${id}`}
+          onClick={() => patchQuantity(id, parseFloat(((qty ?? 0) - 0.01).toFixed(2)))} style={{ position: 'static' }}>
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13H5v-2h14v2z"/></svg>
                           </button>
-                          <span>{qty}</span>
-                          <button className="icon-btn" aria-label="Increase" title={`PATCH /api/cart/${id}`}
-                                  onClick={() => patchQuantity(id, (qty ?? 0) + 1)} style={{ position: 'static' }}>
+        <span>{typeof qty === 'number' ? qty.toFixed(2) : qty}</span>
+        <button className="icon-btn" aria-label="Increase" title={`PATCH /api/cart/${id}`}
+          onClick={() => patchQuantity(id, parseFloat(((qty ?? 0) + 0.01).toFixed(2)))} style={{ position: 'static' }}>
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                           </button>
                         </div>

@@ -16,20 +16,20 @@ public class AccountService : IAccountService
         _tokenRepository = tokenRepository;
     }
 
-    public Task<UserDto> CreateUserAsync(RegisterInputModel inputModel)
-        => _userRepository.CreateUserAsync(inputModel);
+    public Task<UserDto> CreateUser(RegisterInputModel inputModel)
+        => _userRepository.CreateUser(inputModel);
 
-    public Task<UserDto> AuthenticateUserAsync(LoginInputModel loginInputModel)
-        => _userRepository.AuthenticateUserAsync(loginInputModel);
+    public Task<UserDto> AuthenticateUser(LoginInputModel loginInputModel)
+        => _userRepository.AuthenticateUser(loginInputModel);
 
-    public Task LogoutAsync(int tokenId)
+    public Task Logout(int tokenId)
     {
-        return _tokenRepository.VoidTokenAsync(tokenId);
+        return _tokenRepository.VoidToken(tokenId);
     }
 
-    public Task<UserDto?> GetUserByEmailAsync(string email)
-        => _userRepository.GetByEmailAsync(email);
+    public Task<UserDto?> GetUserByEmail(string email)
+        => _userRepository.GetByEmail(email);
 
-    public Task UpdateFullNameAsync(string email, string fullName)
-        => _userRepository.UpdateFullNameAsync(email, fullName);
+    public Task UpdateFullName(string email, string fullName)
+        => _userRepository.UpdateFullName(email, fullName);
 }

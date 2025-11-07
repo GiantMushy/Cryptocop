@@ -56,7 +56,7 @@ public static class JwtAuthenticationExtensions
                             return;
                         }
 
-                        var isBlacklisted = await jwtService.IsTokenBlacklistedAsync(tokenId);
+                        var isBlacklisted = await jwtService.IsTokenBlacklisted(tokenId);
                         if (isBlacklisted)
                         {
                             context.Fail("Token is blacklisted");

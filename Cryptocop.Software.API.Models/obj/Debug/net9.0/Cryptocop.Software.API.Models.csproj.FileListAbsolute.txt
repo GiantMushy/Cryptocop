@@ -22,3 +22,4 @@
 /src/Cryptocop.Software.API.Models/obj/Debug/net9.0/refint/Cryptocop.Software.API.Models.dll
 /src/Cryptocop.Software.API.Models/obj/Debug/net9.0/Cryptocop.Software.API.Models.pdb
 /src/Cryptocop.Software.API.Models/obj/Debug/net9.0/ref/Cryptocop.Software.API.Models.dll
+/Users/totomcfrodo/Documents/GitHub/Cryptocop/Cryptocop.Software.API.Models/obj/Debug/net9.0/Cryptocop.Software.API.Models.sourcelink.json

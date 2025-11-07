@@ -4,6 +4,6 @@ namespace Cryptocop.Software.API.Services.Interfaces;
 
 public interface ICryptoCurrencyService
 {
-    Task<IEnumerable<CryptoCurrencyDto>> GetAvailableCryptocurrenciesAsync();
-    Task<double?> GetPriceUsdAsync(string identifier);
+    Task<IEnumerable<CryptoCurrencyDto>> GetAvailableCryptocurrencies();
+    Task<double?> GetPriceUsd(string identifier);
 }

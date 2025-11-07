@@ -1,0 +1,115 @@
+{
+  "info": {
+    "name": "Cryptocop API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Minimal collection documenting Cryptocop endpoints. Set {{baseUrl}} (e.g., http://localhost:5002) and {{jwtToken}} after signin."
+  },
+  "item": [
+    {
+      "name": "Account - Register",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": { "raw": "{{baseUrl}}/api/account/register", "host": ["{{baseUrl}}"], "path": ["api","account","register"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"fullName\": \"Jane User\",\n  \"password\": \"Password123!\",\n  \"passwordConfirmation\": \"Password123!\"\n}" }
+      }
+    },
+    {
+      "name": "Account - Sign In",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": { "raw": "{{baseUrl}}/api/account/signin", "host": ["{{baseUrl}}"], "path": ["api","account","signin"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (data.token) { pm.collectionVariables.set('jwtToken', data.token); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account - Me",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/account/me", "host": ["{{baseUrl}}"], "path": ["api","account","me"] }
+      }
+    },
+    {
+      "name": "Crypto - List",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cryptocurrencies", "host": ["{{baseUrl}}"], "path": ["api","cryptocurrencies"] } }
+    },
+    {
+      "name": "Crypto - Price",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cryptocurrencies/btc/price", "host": ["{{baseUrl}}"], "path": ["api","cryptocurrencies","btc","price"] } }
+    },
+    {
+      "name": "Exchanges - Page 1",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/exchanges?pageNumber=1", "host": ["{{baseUrl}}"], "path": ["api","exchanges"], "query": [{"key":"pageNumber","value":"1"}] } }
+    },
+    {
+      "name": "Addresses - Create",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] },
+        "body": { "mode": "raw", "raw": "{\n  \"streetName\": \"Main\",\n  \"houseNumber\": \"1\",\n  \"zipCode\": \"12345\",\n  \"country\": \"USA\",\n  \"city\": \"Metropolis\"\n}" }
+      }
+    },
+    {
+      "name": "Addresses - List",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] } }
+    },
+    {
+      "name": "Payments - Add",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] },
+        "body": { "mode": "raw", "raw": "{\n  \"cardholderName\": \"Jane User\",\n  \"cardNumber\": \"4485275742308327\",\n  \"month\": 12,\n  \"year\": 30\n}" }
+      }
+    },
+    {
+      "name": "Payments - List",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] } }
+    },
+    {
+      "name": "Cart - Add BTC 0.05",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] },
+        "body": { "mode": "raw", "raw": "{\n  \"productIdentifier\": \"btc\",\n  \"quantity\": 0.05\n}" }
+      }
+    },
+    {
+      "name": "Cart - List",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] } }
+    },
+    {
+      "name": "Orders - Create",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] },
+        "body": { "mode": "raw", "raw": "{\n  \"addressId\": 1,\n  \"paymentCardId\": 1\n}" }
+      }
+    },
+    {
+      "name": "Orders - List",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] } }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5002" },
+    { "key": "jwtToken", "value": "" }
+  ]
+}

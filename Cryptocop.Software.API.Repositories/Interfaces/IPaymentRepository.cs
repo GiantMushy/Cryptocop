@@ -5,7 +5,7 @@ namespace Cryptocop.Software.API.Repositories.Interfaces;
 
 public interface IPaymentRepository
 {
-    Task AddPaymentCardAsync(string email, PaymentCardInputModel paymentCard);
-    Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCardsAsync(string email);
-    Task<PaymentCardDto?> GetPaymentCardByIdAsync(string email, int id);
+    Task AddPaymentCard(string email, PaymentCardInputModel paymentCard);
+    Task<IEnumerable<PaymentCardDto>> GetStoredPaymentCards(string email);
+    Task<PaymentCardDto?> GetPaymentCardById(string email, int id);
 }

@@ -32,7 +32,7 @@ public class AddressController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        var items = await _addressService.GetAllAddressesAsync(email);
+    var items = await _addressService.GetAllAddresses(email);
         return Ok(items);
     }
 
@@ -44,7 +44,7 @@ public class AddressController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _addressService.AddAddressAsync(email, input);
+    await _addressService.AddAddress(email, input);
         return Created("/api/addresses", null);
     }
 
@@ -55,7 +55,7 @@ public class AddressController : ControllerBase
     {
         var email = GetEmail();
         if (string.IsNullOrWhiteSpace(email)) return Unauthorized();
-        await _addressService.DeleteAddressAsync(email, id);
+    await _addressService.DeleteAddress(email, id);
         return NoContent();
     }
 }

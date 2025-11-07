@@ -20,19 +20,19 @@ public class OrderService : IOrderService
         _queueService = queueService;
     }
 
-    public Task<IEnumerable<OrderDto>> GetOrdersAsync(string email)
-        => _orderRepository.GetOrdersAsync(email);
+    public Task<IEnumerable<OrderDto>> GetOrders(string email)
+        => _orderRepository.GetOrders(email);
 
-    public async Task<OrderDto> CreateNewOrderAsync(string email, OrderInputModel order)
+    public async Task<OrderDto> CreateNewOrder(string email, OrderInputModel order)
     {
         // Create order in repository (returns unmasked credit card per spec)
-        var created = await _orderRepository.CreateNewOrderAsync(email, order);
+        var created = await _orderRepository.CreateNewOrder(email, order);
 
         // Delete the current shopping cart
-        await _shoppingCartRepository.DeleteCartAsync(email);
+        await _shoppingCartRepository.DeleteCart(email);
 
         // Publish message to RabbitMQ with routing key 'create-order'
-        await _queueService.PublishMessageAsync("create-order", created);
+        await _queueService.PublishMessage("create-order", created);
 
         return created;
     }
