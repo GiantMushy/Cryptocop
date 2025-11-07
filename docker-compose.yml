@@ -17,6 +17,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
+      - Messari__BaseUrl=https://messari-mock-907563a36b7b.herokuapp.com
+      - Messari__ApiKey=
     depends_on:
       - postgres
       - payments

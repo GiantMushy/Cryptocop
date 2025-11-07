@@ -10,6 +10,6 @@ public class ShoppingCartItemInputModel
 	public int ShoppingCartId { get; set; }
 
 	[Required]
-	[Range(0.01, float.MaxValue)]
-	public float? Quantity { get; set; }
+	[Range(0.01, double.MaxValue)]
+	public double? Quantity { get; set; }
 }

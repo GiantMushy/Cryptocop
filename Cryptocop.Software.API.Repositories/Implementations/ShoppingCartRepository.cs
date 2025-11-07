@@ -38,8 +38,11 @@ public class ShoppingCartRepository : IShoppingCartRepository
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) throw new InvalidOperationException("User not found");
         var identifier = shoppingCartItemItem.ProductIdentifier;
-        var requestedQty = shoppingCartItemItem.Quantity ?? 1f;
-        if (requestedQty <= 0f) requestedQty = 1f;
+        // Input model now uses double?; cast to float for persistence layer
+        var requestedQty = (float)(shoppingCartItemItem.Quantity ?? 0.01d);
+        if (requestedQty <= 0f) requestedQty = 0.01f;
+        // Normalize to 2 decimals for storage/display consistency.
+        requestedQty = (float)Math.Round(requestedQty, 2, MidpointRounding.AwayFromZero);
 
         var existing = await _db.ShoppingCartItems
             .FirstOrDefaultAsync(ci => ci.UserId == userId && ci.ProductIdentifier == identifier);
@@ -49,14 +52,14 @@ public class ShoppingCartRepository : IShoppingCartRepository
         if (existing != null)
         {
             // Accumulate quantity if item already exists
-            existing.Quantity = existing.Quantity + requestedQty;
+            existing.Quantity = (float)Math.Round(existing.Quantity + requestedQty, 2, MidpointRounding.AwayFromZero);
             // Keep original unit price if present; otherwise use latest non-zero price if available
             if (existing.UnitPrice <= 0 && unit > 0) existing.UnitPrice = unit;
-            existing.TotalPrice = existing.UnitPrice * (decimal)existing.Quantity;
+            existing.TotalPrice = Math.Round(existing.UnitPrice * (decimal)existing.Quantity, 2, MidpointRounding.AwayFromZero);
         }
         else
         {
-            var toAddQty = requestedQty;
+            var toAddQty = requestedQty; // already rounded above
             _db.ShoppingCartItems.Add(new Entities.ShoppingCartItem
             {
                 UserId = userId,
@@ -95,8 +98,9 @@ public class ShoppingCartRepository : IShoppingCartRepository
             }
             else
             {
-                item.Quantity = quantity;
-                item.TotalPrice = item.UnitPrice * (decimal)quantity;
+                // Normalize quantity to 2 decimals on updates as well
+                item.Quantity = (float)Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
+                item.TotalPrice = Math.Round(item.UnitPrice * (decimal)item.Quantity, 2, MidpointRounding.AwayFromZero);
             }
             await _db.SaveChangesAsync();
         }

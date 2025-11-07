@@ -2,114 +2,211 @@
   "info": {
     "name": "Cryptocop API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Minimal collection documenting Cryptocop endpoints. Set {{baseUrl}} (e.g., http://localhost:5002) and {{jwtToken}} after signin."
+    "description": "Complete test collection for Cryptocop. Set {{baseUrl}} (e.g., http://localhost:5002). Use Account → Sign In to populate {{jwtToken}}."
   },
   "item": [
     {
-      "name": "Account - Register",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" } ],
-        "url": { "raw": "{{baseUrl}}/api/account/register", "host": ["{{baseUrl}}"], "path": ["api","account","register"] },
-        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"fullName\": \"Jane User\",\n  \"password\": \"Password123!\",\n  \"passwordConfirmation\": \"Password123!\"\n}" }
-      }
+      "name": "Account",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/account/register", "host": ["{{baseUrl}}"], "path": ["api","account","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"fullName\": \"Jane User\",\n  \"password\": \"Password123!\",\n  \"passwordConfirmation\": \"Password123!\"\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Register returns 201', () => pm.expect([201,200]).to.include(pm.response.code));"
+            ] } }
+          ]
+        },
+        {
+          "name": "Sign In",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/account/signin", "host": ["{{baseUrl}}"], "path": ["api","account","signin"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Sign in OK', () => pm.expect(pm.response.code).to.eql(200));",
+              "const data = pm.response.json();",
+              "if (data && (data.token || data.Token)) { pm.collectionVariables.set('jwtToken', data.token || data.Token); }",
+              "pm.test('JWT stored', () => pm.expect(pm.collectionVariables.get('jwtToken')).to.be.a('string').and.not.empty);"
+            ] } }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/account/me", "host": ["{{baseUrl}}"], "path": ["api","account","me"] }
+          }
+        },
+        {
+          "name": "Sign Out",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/account/signout", "host": ["{{baseUrl}}"], "path": ["api","account","signout"] }
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Signout NoContent', () => pm.expect(pm.response.code).to.eql(204));"
+            ] } }
+          ]
+        }
+      ]
     },
     {
-      "name": "Account - Sign In",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" } ],
-        "url": { "raw": "{{baseUrl}}/api/account/signin", "host": ["{{baseUrl}}"], "path": ["api","account","signin"] },
-        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}" }
-      },
-      "event": [
+      "name": "Exchanges",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const data = pm.response.json();",
-              "if (data.token) { pm.collectionVariables.set('jwtToken', data.token); }"
-            ],
-            "type": "text/javascript"
+          "name": "Get (page {{pageNumber}})",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges?pageNumber={{pageNumber}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","exchanges"],
+              "query": [ { "key": "pageNumber", "value": "{{pageNumber}}" } ]
+            }
           }
         }
       ]
     },
     {
-      "name": "Account - Me",
-      "request": {
-        "method": "GET",
-        "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
-        "url": { "raw": "{{baseUrl}}/api/account/me", "host": ["{{baseUrl}}"], "path": ["api","account","me"] }
-      }
+      "name": "Cryptocurrencies",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cryptocurrencies", "host": ["{{baseUrl}}"], "path": ["api","cryptocurrencies"] } }
+        }
+      ]
     },
     {
-      "name": "Crypto - List",
-      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cryptocurrencies", "host": ["{{baseUrl}}"], "path": ["api","cryptocurrencies"] } }
+      "name": "Cart",
+      "item": [
+        {
+          "name": "List",
+          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] } },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "const arr = pm.response.json();",
+              "if (Array.isArray(arr) && arr.length > 0) { pm.collectionVariables.set('firstCartItemId', arr[0].id || arr[0].Id); }"
+            ] } }
+          ]
+        },
+        {
+          "name": "Add Item",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] },
+            "body": { "mode": "raw", "raw": "{\n  \"productIdentifier\": \"{{productIdentifier}}\",\n  \"quantity\": {{quantity}}\n}" }
+          }
+        },
+        {
+          "name": "Update Quantity (first item)",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/cart/{{firstCartItemId}}", "host": ["{{baseUrl}}"], "path": ["api","cart","{{firstCartItemId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 0.02\n}" }
+          }
+        },
+        {
+          "name": "Delete Item (first item)",
+          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/cart/{{firstCartItemId}}", "host": ["{{baseUrl}}"], "path": ["api","cart","{{firstCartItemId}}"] } }
+        },
+        {
+          "name": "Clear Cart",
+          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] } }
+        }
+      ]
     },
     {
-      "name": "Crypto - Price",
-      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cryptocurrencies/btc/price", "host": ["{{baseUrl}}"], "path": ["api","cryptocurrencies","btc","price"] } }
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] },
+            "body": { "mode": "raw", "raw": "{\n  \"streetName\": \"Main\",\n  \"houseNumber\": \"1\",\n  \"zipCode\": \"12345\",\n  \"country\": \"USA\",\n  \"city\": \"Metropolis\"\n}" }
+          }
+        },
+        {
+          "name": "List",
+          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] } },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "const arr = pm.response.json();",
+              "if (Array.isArray(arr) && arr.length > 0) { pm.collectionVariables.set('addressId', arr[0].id || arr[0].Id); }"
+            ] } }
+          ]
+        },
+        {
+          "name": "Delete ({{addressId}})",
+          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/addresses/{{addressId}}", "host": ["{{baseUrl}}"], "path": ["api","addresses","{{addressId}}"] } }
+        }
+      ]
     },
     {
-      "name": "Exchanges - Page 1",
-      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/exchanges?pageNumber=1", "host": ["{{baseUrl}}"], "path": ["api","exchanges"], "query": [{"key":"pageNumber","value":"1"}] } }
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Add",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] },
+            "body": { "mode": "raw", "raw": "{\n  \"cardholderName\": \"Jane User\",\n  \"cardNumber\": \"4485275742308327\",\n  \"month\": 12,\n  \"year\": 30\n}" }
+          }
+        },
+        {
+          "name": "List",
+          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] } },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "const arr = pm.response.json();",
+              "if (Array.isArray(arr) && arr.length > 0) { pm.collectionVariables.set('paymentCardId', arr[0].id || arr[0].Id); }"
+            ] } }
+          ]
+        }
+      ]
     },
     {
-      "name": "Addresses - Create",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
-        "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] },
-        "body": { "mode": "raw", "raw": "{\n  \"streetName\": \"Main\",\n  \"houseNumber\": \"1\",\n  \"zipCode\": \"12345\",\n  \"country\": \"USA\",\n  \"city\": \"Metropolis\"\n}" }
-      }
-    },
-    {
-      "name": "Addresses - List",
-      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api","addresses"] } }
-    },
-    {
-      "name": "Payments - Add",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
-        "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] },
-        "body": { "mode": "raw", "raw": "{\n  \"cardholderName\": \"Jane User\",\n  \"cardNumber\": \"4485275742308327\",\n  \"month\": 12,\n  \"year\": 30\n}" }
-      }
-    },
-    {
-      "name": "Payments - List",
-      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api","payments"] } }
-    },
-    {
-      "name": "Cart - Add BTC 0.05",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
-        "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] },
-        "body": { "mode": "raw", "raw": "{\n  \"productIdentifier\": \"btc\",\n  \"quantity\": 0.05\n}" }
-      }
-    },
-    {
-      "name": "Cart - List",
-      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] } }
-    },
-    {
-      "name": "Orders - Create",
-      "request": {
-        "method": "POST",
-        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
-        "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] },
-        "body": { "mode": "raw", "raw": "{\n  \"addressId\": 1,\n  \"paymentCardId\": 1\n}" }
-      }
-    },
-    {
-      "name": "Orders - List",
-      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] } }
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] },
+            "body": { "mode": "raw", "raw": "{\n  \"addressId\": {{addressId}},\n  \"paymentCardId\": {{paymentCardId}}\n}" }
+          }
+        },
+        {
+          "name": "List",
+          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwtToken}}" } ], "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] } }
+        }
+      ]
     }
   ],
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:5002" },
-    { "key": "jwtToken", "value": "" }
+    { "key": "jwtToken", "value": "" },
+    { "key": "pageNumber", "value": "1" },
+    { "key": "productIdentifier", "value": "btc" },
+    { "key": "quantity", "value": "0.01" },
+    { "key": "addressId", "value": "1" },
+    { "key": "paymentCardId", "value": "1" }
   ]
 }

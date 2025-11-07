@@ -48,8 +48,7 @@ public class AccountController : ControllerBase
         }
     }
 
-    // POST /api/account/signout (and GET for compatibility)
-    [HttpPost("signout")]
+    // GET /api/account/signout
     [HttpGet("signout")]
     [Authorize]
     public IActionResult SignOut()

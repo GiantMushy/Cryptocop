@@ -7,7 +7,7 @@ namespace Cryptocop.Software.API.Controllers;
 
 [ApiController]
 [Route("api/cryptocurrencies")]
-[AllowAnonymous] // for possible autograder access
+[AllowAnonymous]
 public class CryptoCurrencyController : ControllerBase
 {
     private readonly ICryptoCurrencyService _cryptoService;
@@ -31,7 +31,6 @@ public class CryptoCurrencyController : ControllerBase
     {
     var price = await _cryptoService.GetPriceUsd(identifier);
         if (price is null) return NotFound();
-        // Return both common key shapes for compatibility with various clients/autograders
         return Ok(new { priceUsd = price, priceInUsd = price });
     }
 }

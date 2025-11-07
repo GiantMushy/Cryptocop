@@ -18,8 +18,8 @@ public class CryptoCurrencyService : ICryptoCurrencyService
 
     public async Task<IEnumerable<CryptoCurrencyDto>> GetAvailableCryptocurrencies()
     {
-        // v2 assets with price; flatten so price_usd maps to DTO's PriceInUsd
-        var url = "/api/v2/assets?limit=50&fields=id,slug,symbol,name,metrics/market_data/price_usd";
+    // Instructor mock: list assets from mock host (/api/v2/assets)
+    var url = "/api/v2/assets?limit=50&fields=id,slug,symbol,name,metrics/market_data/price_usd";
         var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
         var list = (await response.DeserializeJsonToList<CryptoCurrencyDto>(flatten: true))?.ToList() ?? new List<CryptoCurrencyDto>();
@@ -66,7 +66,21 @@ public class CryptoCurrencyService : ICryptoCurrencyService
             var normalized = identifier.Trim().ToLowerInvariant();
             var key = Uri.EscapeDataString(normalized);
 
-            // Use v2 assets filter by slug to fetch price directly (no API key required)
+            // Primary price source using mock asset metrics endpoint
+            var urlMetrics = $"/api/v1/assets/{key}/metrics/market-data";
+            var responseMetrics = await _httpClient.GetAsync(urlMetrics);
+            if (responseMetrics.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var single = await responseMetrics.DeserializeJsonToObject<dynamic>(flatten: true);
+                    double p = (double)(single.price_usd ?? single.Price_usd ?? single.PriceUsd ?? 0d);
+                    if (p > 0) return p;
+                }
+                catch { /* ignore parse */ }
+            }
+
+            // Fallback: v2 assets filter by slug to fetch price
             var urlListBySlug = $"/api/v2/assets?slugs={key}&limit=1&fields=metrics/market_data/price_usd";
             var responseList = await _httpClient.GetAsync(urlListBySlug);
             if (responseList.IsSuccessStatusCode)
@@ -77,7 +91,7 @@ public class CryptoCurrencyService : ICryptoCurrencyService
             }
 
             // As a broader safety net, query a larger page and match by slug/symbol
-            var urlTop = "/api/v2/assets?limit=500&fields=slug,symbol,metrics/market_data/price_usd";
+            var urlTop = "/api/v2/assets?limit=200&fields=slug,symbol,metrics/market_data/price_usd"; // reduced for mock
             var responseTop = await _httpClient.GetAsync(urlTop);
             if (responseTop.IsSuccessStatusCode)
             {

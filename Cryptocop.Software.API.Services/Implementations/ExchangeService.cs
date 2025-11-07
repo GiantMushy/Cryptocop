@@ -18,93 +18,82 @@ public class ExchangeService : IExchangeService
 
     public async Task<Envelope<ExchangeDto>> GetExchanges(int pageNumber = 1)
     {
-        var result = new List<ExchangeDto>();
-        var limit = 50;
+        if (pageNumber < 1) pageNumber = 1;
+        const int limit = 50;
 
-        // 1) Try Messari v1 markets (may require API key). If successful, map flattened fields.
-        try
+    // Using instructor-provided mock base (configured in Program.cs) for markets listing
+    var url = $"/api/v1/markets?limit={limit}&page={pageNumber}";
+        var response = await _httpClient.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
         {
-            var url = $"/api/v1/markets?limit={limit}&page={pageNumber}";
-            var response = await _httpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                var flat = await response.DeserializeJsonToList<dynamic>(flatten: true) ?? Enumerable.Empty<dynamic>();
-                foreach (var it in flat)
-                {
-                    try
-                    {
-                        string id = it.id ?? it.Id ?? string.Empty;
-                        string name = it.exchange_name ?? it.name ?? it.Name ?? string.Empty;
-                        string slug = it.exchange_slug ?? it.slug ?? it.Slug ?? string.Empty;
-                        string assetSymbol = it.base_asset_symbol ?? it.AssetSymbol ?? it.symbol ?? it.Symbol ?? string.Empty;
-                        float? price = null;
-                        try
-                        {
-                            var p = (double?) (it.price_usd ?? it.Price_usd ?? it.PriceUsd);
-                            if (p.HasValue) price = (float)p.Value;
-                        }
-                        catch { /* ignore price parse */ }
-
-                        result.Add(new ExchangeDto
-                        {
-                            Id = id,
-                            Name = name,
-                            Slug = slug,
-                            AssetSymbol = assetSymbol,
-                            PriceInUsd = price
-                        });
-                    }
-                    catch { /* ignore row */ }
-                }
-            }
+            // Propagate a clean error picked up by ProblemDetails middleware
+            var status = (int)response.StatusCode;
+            var body = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Messari markets request failed (status {status}). Body: {body.TruncateForLog(500)}");
         }
-        catch { /* ignore and fall back */ }
 
-        // 2) Fallback: use assets v2 as a surrogate list so UI isn't empty (no API key required for top assets)
-        if (result.Count == 0)
+        var flat = await response.DeserializeJsonToList<dynamic>(flatten: true) ?? Enumerable.Empty<dynamic>();
+        var items = new List<ExchangeDto>();
+
+        foreach (var it in flat)
         {
             try
             {
-                var url2 = $"/api/v2/assets?limit={limit}&fields=id,slug,symbol,metrics/market_data/price_usd";
-                var resp2 = await _httpClient.GetAsync(url2);
-                if (resp2.IsSuccessStatusCode)
+                // /api/v1/markets returns market rows with exchange + base asset + price
+                string id = it.id ?? it.Id ?? string.Empty;
+                string name = it.exchange_name ?? it.name ?? it.Name ?? string.Empty;
+                string slug = it.exchange_slug ?? it.slug ?? it.Slug ?? string.Empty;
+                string assetSymbol = it.base_asset_symbol ?? it.base_symbol ?? it.symbol ?? it.Symbol ?? string.Empty;
+                float? price = null;
+                try
                 {
-                    var items = await resp2.DeserializeJsonToList<dynamic>(flatten: true) ?? Enumerable.Empty<dynamic>();
-                    foreach (var it in items)
-                    {
-                        try
-                        {
-                            string id = it.id ?? it.Id ?? it.slug ?? it.Slug ?? it.symbol ?? it.Symbol ?? Guid.NewGuid().ToString("N");
-                            string symbol = it.symbol ?? it.Symbol ?? string.Empty;
-                            string slug = it.slug ?? it.Slug ?? string.Empty;
-                            float? price = null;
-                            try
-                            {
-                                var p = (double?) (it.price_usd ?? it.Price_usd ?? it.PriceUsd);
-                                if (p.HasValue) price = (float)p.Value;
-                            }
-                            catch { }
-
-                            result.Add(new ExchangeDto
-                            {
-                                Id = id,
-                                Name = symbol,
-                                Slug = slug,
-                                AssetSymbol = symbol,
-                                PriceInUsd = price
-                            });
-                        }
-                        catch { /* ignore row */ }
-                    }
+                    var p = (double?) (it.price_usd ?? it.Price_usd ?? it.PriceUsd);
+                    if (p.HasValue) price = (float)p.Value;
                 }
+                catch { /* ignore price parse */ }
+                DateTime? lastTrade = null;
+                try
+                {
+                    lastTrade = (DateTime?) (it.last_trade_at ?? it.Last_trade_at ?? it.LastTradeAt);
+                }
+                catch { /* ignore date parse */ }
+
+                if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(assetSymbol))
+                {
+                    continue; // skip empty row
+                }
+
+                items.Add(new ExchangeDto
+                {
+                    Id = id,
+                    Name = name,
+                    Slug = slug,
+                    AssetSymbol = assetSymbol,
+                    PriceInUsd = price,
+                    LastTrade = lastTrade
+                });
             }
-            catch { /* give up; return empty */ }
+            catch
+            {
+                // Ignore individual malformed entries
+            }
         }
 
         return new Envelope<ExchangeDto>
         {
             PageNumber = pageNumber,
-            Items = result
+            Items = items
         };
+    }
+}
+
+internal static class ExchangeServiceLogHelpers
+{
+    // Helper to ensure we don't log excessively large upstream bodies in exception messages
+    public static string TruncateForLog(this string? value, int max)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+        return value.Length <= max ? value : value.Substring(0, max) + "...";
     }
 }
