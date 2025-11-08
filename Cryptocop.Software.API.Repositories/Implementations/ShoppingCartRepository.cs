@@ -38,7 +38,6 @@ public class ShoppingCartRepository : IShoppingCartRepository
         var userId = await _db.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
         if (userId == 0) throw new InvalidOperationException("User not found");
         var identifier = shoppingCartItemItem.ProductIdentifier;
-        // Input model now uses double?; cast to float for persistence layer
         var requestedQty = (float)(shoppingCartItemItem.Quantity ?? 0.01d);
         if (requestedQty <= 0f) requestedQty = 0.01f;
         // Normalize to 2 decimals for storage/display consistency.
@@ -91,7 +90,7 @@ public class ShoppingCartRepository : IShoppingCartRepository
         var item = await _db.ShoppingCartItems.FirstOrDefaultAsync(ci => ci.Id == id && ci.UserId == userId);
         if (item != null)
         {
-            // If quantity is <= 0, remove the item
+            // If quantity is <= 0, remove the item, since I added a [ - ] button in the Web UI
             if (quantity <= 0f)
             {
                 _db.ShoppingCartItems.Remove(item);

@@ -23,9 +23,7 @@ public class AccountService : IAccountService
         => _userRepository.AuthenticateUser(loginInputModel);
 
     public Task Logout(int tokenId)
-    {
-        return _tokenRepository.VoidToken(tokenId);
-    }
+        => _tokenRepository.VoidToken(tokenId);
 
     public Task<UserDto?> GetUserByEmail(string email)
         => _userRepository.GetByEmail(email);

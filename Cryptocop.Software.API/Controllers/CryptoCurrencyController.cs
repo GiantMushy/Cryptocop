@@ -19,6 +19,7 @@ public class CryptoCurrencyController : ControllerBase
 
     // GET /api/cryptocurrencies
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<CryptoCurrencyDto>>> Get()
     {
     var items = await _cryptoService.GetAvailableCryptocurrencies();
@@ -27,6 +28,7 @@ public class CryptoCurrencyController : ControllerBase
 
     // GET /api/cryptocurrencies/{identifier}/price
     [HttpGet("{identifier}/price")]
+    [Authorize]
     public async Task<ActionResult<object>> GetPrice([FromRoute] string identifier)
     {
     var price = await _cryptoService.GetPriceUsd(identifier);

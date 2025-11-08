@@ -25,14 +25,9 @@ public class OrderService : IOrderService
 
     public async Task<OrderDto> CreateNewOrder(string email, OrderInputModel order)
     {
-        // Create order in repository (returns unmasked credit card per spec)
         var created = await _orderRepository.CreateNewOrder(email, order);
-
-        // Delete the current shopping cart
-        await _shoppingCartRepository.DeleteCart(email);
-
-        // Publish message to RabbitMQ with routing key 'create-order'
-        await _queueService.PublishMessage("create-order", created);
+        await _shoppingCartRepository.DeleteCart(email); // Delete the current shopping cart
+        await _queueService.PublishMessage("create-order", created); // Publish message to RabbitMQ
 
         return created;
     }

@@ -38,46 +38,39 @@ public class ExchangeService : IExchangeService
 
         foreach (var it in flat)
         {
+            // /api/v1/markets returns market rows with exchange + base asset + price
+            string id = it.id ?? it.Id ?? string.Empty;
+            string name = it.exchange_name ?? it.name ?? it.Name ?? string.Empty;
+            string slug = it.exchange_slug ?? it.slug ?? it.Slug ?? string.Empty;
+            string assetSymbol = it.base_asset_symbol ?? it.base_symbol ?? it.symbol ?? it.Symbol ?? string.Empty;
+            float? price = null;
             try
             {
-                // /api/v1/markets returns market rows with exchange + base asset + price
-                string id = it.id ?? it.Id ?? string.Empty;
-                string name = it.exchange_name ?? it.name ?? it.Name ?? string.Empty;
-                string slug = it.exchange_slug ?? it.slug ?? it.Slug ?? string.Empty;
-                string assetSymbol = it.base_asset_symbol ?? it.base_symbol ?? it.symbol ?? it.Symbol ?? string.Empty;
-                float? price = null;
-                try
-                {
-                    var p = (double?) (it.price_usd ?? it.Price_usd ?? it.PriceUsd);
-                    if (p.HasValue) price = (float)p.Value;
-                }
-                catch { /* ignore price parse */ }
-                DateTime? lastTrade = null;
-                try
-                {
-                    lastTrade = (DateTime?) (it.last_trade_at ?? it.Last_trade_at ?? it.LastTradeAt);
-                }
-                catch { /* ignore date parse */ }
-
-                if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(assetSymbol))
-                {
-                    continue; // skip empty row
-                }
-
-                items.Add(new ExchangeDto
-                {
-                    Id = id,
-                    Name = name,
-                    Slug = slug,
-                    AssetSymbol = assetSymbol,
-                    PriceInUsd = price,
-                    LastTrade = lastTrade
-                });
+                var p = (double?) (it.price_usd ?? it.Price_usd ?? it.PriceUsd);
+                if (p.HasValue) price = (float)p.Value;
             }
-            catch
+            catch { /* ignore price parse */ }
+            DateTime? lastTrade = null;
+            try
             {
-                // Ignore individual malformed entries
+                lastTrade = (DateTime?) (it.last_trade_at ?? it.Last_trade_at ?? it.LastTradeAt);
             }
+            catch { /* ignore date parse */ }
+
+            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(assetSymbol))
+            {
+                continue; // skip empty row
+            }
+
+            items.Add(new ExchangeDto
+            {
+                Id = id,
+                Name = name,
+                Slug = slug,
+                AssetSymbol = assetSymbol,
+                PriceInUsd = price,
+                LastTrade = lastTrade
+            });
         }
 
         return new Envelope<ExchangeDto>

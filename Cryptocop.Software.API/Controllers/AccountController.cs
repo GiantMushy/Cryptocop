@@ -64,7 +64,7 @@ public class AccountController : ControllerBase
     }
 
 
-    // Additional functionality for the Web Client (Profile Management)
+    // ------------ Additional functionality for the Web UI (Profile Management) ------------
     private string? GetEmail()
     {
         return User.FindFirst("email")?.Value

@@ -20,6 +20,7 @@ public class ExchangeController : ControllerBase
 
     // GET /api/exchanges?pageNumber=1
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<Envelope<ExchangeDto>>> Get([FromQuery] int pageNumber = 1)
     {
         if (pageNumber < 1) pageNumber = 1;

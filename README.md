@@ -1,73 +1,47 @@
-# Cryptocop - Local Dev Stack
+# Cryptocop
 
-This project includes:
+Feature showcase for a small crypto shop backend + minimal UI.
 
-- .NET 9 Web API with JWT auth and OnTokenValidated blacklist check
-- Payments and Emails workers (background services)
-- Minimal React (Vite) test UI to register/sign in/sign out
-- Docker Compose for one-command bring-up
+## Stack & Architecture
+* ASP.NET Core 9 Web API
+* JWT auth with token blacklist (persistent sign-out)
+* RabbitMQ + two workers (Payments, Emails)
+* PostgreSQL via EF Core (auto migrations on startup)
+* React (Vite) web client (register, sign in, cart interaction)
+* Docker Compose orchestration
 
-## Quick start
+## Domain Features
+* Account: register, sign in/out, JWT issuance & revocation
+* Addresses: CRUD per user
+* Shopping cart: fractional quantities (0.01), add/update/delete, price lookup
+* Payments & Orders: publish to queue; workers consume (mock processing + email)
+* Cryptocurrencies: asset listing & price endpoint (priceUsd + priceInUsd)
+* Markets ("exchanges" endpoint): sourced from instructor mock service
 
-Prerequisites: Docker Desktop 4.0+.
+## Technical Highlights
+* Centralized ProblemDetails error responses
+* Token blacklist enforced in `OnTokenValidated` for immediate revocation
+* Rounding & validation to avoid float precision issues (cart quantities/prices)
+* HttpClient-based external service layer (crypto + markets) with fallback logic
+* Postman collection included for automated endpoint tests (`Postman/Cryptocop.postman_collection.json`)
 
-1. Build images
+## Postman (Tests)
+Import collection, run Register then Sign in, execute remaining requests. CLI: `newman run Postman/Cryptocop.postman_collection.json --reporters cli`.
 
-```
-docker compose build
-```
+## Directories
+* `Cryptocop.Software.API` – controllers, middleware, DI setup
+* `Cryptocop.Software.API.Models` – DTOs, envelopes, input models
+* `Cryptocop.Software.API.Repositories` – EF Core entities & data access
+* `Cryptocop.Software.API.Services` – business logic & external API calls
+* `Cryptocop.Software.Worker.Payments` / `...Emails` – background queue consumers
+* `web/` – Vite React client
+* `Postman/` – test collection
 
-2. Start the stack
+## Notes
+* Markets & asset data use the provided mock base URL via compose env.
+* Email worker expects a `SENDGRID_API_KEY` (empty by default).
+* All auth-required endpoints protected by fallback authorization; public ones marked `[AllowAnonymous]`.
 
-```
-docker compose up -d
-```
-
-Services:
-
-- API: http://localhost:5002
-- Swagger: http://localhost:5002/swagger
-- Web UI: http://localhost:5173
- - RabbitMQ Management: http://localhost:15672 (guest/guest)
- - Postgres: localhost:5432 (postgres/postgres)
-
-3. Stop the stack
-
-```
-docker compose down
-```
-
-If you see a port conflict on 5002, change the host port in `docker-compose.yml`.
-
-## Dev notes
-
-- CORS is enabled in Development for `http://localhost:5173`.
-- JWT settings live in `Cryptocop.Software.API/appsettings.json` under `Jwt`.
-- React dev server reads `VITE_API_BASE_URL` from compose env.
-
-### Database migrations
-
-Migrations are applied in two ways:
-
-- API attempts to apply pending EF Core migrations on startup in Development.
-- You can force-apply migrations using a one-off .NET SDK container attached to the compose network:
-
-```
-docker run --rm \
-	--network cryptocop_default \
-	-v "$(pwd)":/src -w /src \
-	mcr.microsoft.com/dotnet/sdk:9.0 bash -lc "\
-		dotnet tool install -g dotnet-ef >/dev/null && \
-		export PATH=\"$PATH:/root/.dotnet/tools\" && \
-		dotnet ef database update \
-			--project Cryptocop.Software.API.Repositories/Cryptocop.Software.API.Repositories.csproj \
-			--startup-project Cryptocop.Software.API/Cryptocop.Software.API.csproj \
-			--context CryptocopDbContext \
-			--connection \"Host=postgres;Port=5432;Database=cryptocop;Username=postgres;Password=postgres\""
-```
-
-### JWT blacklist persistence
-
-- JWTs include a `tokenId` claim. Sign-out blacklists the token in Postgres (`Tokens` table).
-- Blacklisted tokens are rejected by an `OnTokenValidated` check across restarts.
+---
+This README intentionally concise: it enumerates capabilities rather than full run instructions.
 
